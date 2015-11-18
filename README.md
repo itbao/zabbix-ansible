@@ -9,5 +9,5 @@
 [3] [ Install ZabbixServer ]
 [4] [ Install ZabbixAgent  ]
 ---------------------------------------
-```
 输入要执行的任务:
+```
