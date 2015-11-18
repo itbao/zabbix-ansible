@@ -1,0 +1,24 @@
+#http://ansible-tran.readthedocs.org/en/latest/docs/intro_inventory.html#inventoryformat
+
+#zabbix_server_port=10051
+#http_port=80
+#ansible_ssh_pass=
+#ansible_sudo_user=
+#ansible_ssh_port=
+#ansible_ssh_private_key_file=
+#ansible_shell_type='bash'
+
+
+[control]
+localhost ansible_connection=local
+
+[zabbix_server]
+#10.255.0.220
+10.130.0.248  ansible_ssh_pass=Pass1234
+
+[zabbix_agent]
+#10.255.0.220
+10.130.0.248 ansible_ssh_pass=Pass1234
+[mysql]
+#10.255.0.220
+10.130.0.248 ansible_ssh_pass=Pass1234

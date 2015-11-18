@@ -1,0 +1,45 @@
+---
+- name: Install zabbix_server
+  yum: name={{ item }} state=present enablerepo=ustack_zabbix
+  with_items:
+  - zabbix-{{ zabbix_server_version }}
+  - zabbix-server-{{ zabbix_server_version }}
+  - zabbix-server-mysql-{{ zabbix_server_version }}
+  - zabbix-get-{{ zabbix_server_version }}
+  - zabbix-web-{{ zabbix_server_version }}
+  - zabbix-java-gateway-{{ zabbix_server_version }}
+  - zabbix-web-mysql-{{ zabbix_server_version }}
+
+- name: determine InnoDB buffer pool size
+  set_fact: innodb_buffer_pool_size={{ ansible_memtotal_mb|int * innodb_buffer_pool_ratio }}
+  when: innodb_buffer_pool_size is not defined
+
+- set_fact: start_pollers={{ item_number // 200  }}
+- set_fact: start_pollers_unreachable={{ item_number // 1000}}
+- set_fact: start_trappers={{ item_number // 2000 }}
+- set_fact: start_pingers={{ item_number // 4000 }}
+- set_fact: start_discoverers={{ item_number // 6000 }}
+
+
+- name: Copy zabbix_server configuration
+  template: src=zabbix_server.conf dest=/etc/zabbix/zabbix_server.conf backup=yes
+  notify:
+  - restart zabbix-server
+
+- name: zabbix-server run
+  service: name=zabbix-server state=started enabled=yes
+
+- template: src=php.ini dest=/etc/php.ini
+  notify: 
+  - restart httpd
+
+- template: src=zabbix.conf.php dest=/etc/zabbix/web/zabbix.conf.php
+  notify: 
+  - restart httpd
+
+- template: src=httpd.conf dest=/etc/httpd/conf/httpd.conf
+  notify: 
+  - restart httpd
+
+- name: httpd run
+  service: name=httpd state=started enabled=yes

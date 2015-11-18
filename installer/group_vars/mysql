@@ -1,0 +1,17 @@
+---
+mysql_version: 56-5.6.24
+innodb_buffer_pool_ratio: .70
+
+#mysql_datadir: /data/mysql
+#mysql_basedir: /data
+
+mysql_datadir: /var/lib/mysql
+mysql_basedir: /var/lib
+
+ustack_mysql_data: mysql_zabbix_config-data_null_20151112.tgz
+
+mysql_name: zabbix
+mysql_user: zabbix
+mysql_password: zbxpass
+mysql_port: 3306
+mysql_ip: 127.0.0.1

@@ -1,0 +1,4 @@
+[ustack_zabbix]
+name=ustack_zabbix
+baseurl=http://{{ yum_ip }}/zabbix-repo
+gpgcheck=0

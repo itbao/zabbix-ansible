@@ -1,0 +1,60 @@
+---
+#- include: offselinux.yml
+
+- name: create mysql_datadir
+  file: path={{ mysql_datadir }} owner=mysql group=mysql state=directory
+
+
+
+- name: Install ZabbixDB-Mysql
+  yum: name={{ item }} state=present enablerepo=ustack_zabbix
+  with_items:
+  - Percona-Server-client-{{ mysql_version }}
+  - Percona-Server-devel-{{ mysql_version }}
+  - Percona-Server-server-{{ mysql_version }}
+  - Percona-Server-shared-{{ mysql_version }}
+  - Percona-Server-test-{{ mysql_version }}
+
+- name: check mysql size
+  shell: "du -sk {{ mysql_datadir }}|awk '{print $1}'"
+  register: mysql_size
+
+- name: check mysql data_dir
+  shell: "ls {{ mysql_datadir }} |wc -l"
+  register: mysqldir_ls
+
+- name: check mysql process
+  shell: "ps axu|grep -i 'mysq[l]'|wc -l"
+  register: mysql_ps
+
+- name: Clean  mysql_datadir
+  shell: "cd {{ mysql_datadir }} && rm -rf *"
+  when: mysql_ps.stdout  == "0" and mysql_size.stdout |int < 132848
+  
+- name: determine InnoDB buffer pool size
+  set_fact: innodb_buffer_pool_size={{ ansible_memtotal_mb|int * innodb_buffer_pool_ratio }} 
+  when: innodb_buffer_pool_size is not defined
+
+- name: Copy mysql configuration for zabbix
+  template: src=my.cnf dest=/etc/my.cnf backup=yes
+
+
+#- debug: msg="{{ mysqldir_ls.stdout }}"
+
+- name: copy ustack mysql_data
+  copy: src={{ ustack_mysql_data }} dest={{ mysql_basedir }}/{{ ustack_mysql_data }}
+  when: mysql_ps.stdout  == "0" and mysqldir_ls.stdout == "0"
+
+- name: unzip ustack mysql_data
+  shell: "cd {{ mysql_basedir }} && tar zxf {{ ustack_mysql_data }} &&  rm -f {{ ustack_mysql_data }} "
+  when: mysql_ps.stdout == "0"  and  mysqldir_ls.stdout == "0"
+  notify:
+    - restart mysql
+
+- shell: "mkdir -p /etc/zabbix/cron"
+
+- name: copy housekeeping
+  copy: src=housekeeping.sh dest=/etc/zabbix/cron/housekeeping.sh
+
+- name: Config Partition Cron of Mysql
+  cron: name="Zabbix MySql Partition Housekeeping" hour="18" job="/bin/bash /etc/zabbix/cron/housekeeping.sh 2>&1 " 

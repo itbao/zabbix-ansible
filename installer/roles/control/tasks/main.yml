@@ -1,0 +1,16 @@
+---
+
+#- include: copy_zabbix_repo.yml
+
+- name: create /data
+  shell: "mkdir -p /data"
+
+- name: Copy package
+  copy: src=zabbix-repo.tar  dest=/data/zabbix-repo.tar owner=apache group=apache
+  notify: unzip zabbix-repo
+
+- name: Configuration zabbix-repo.conf of httpd
+  template: src=zabbix-repo.conf dest=/etc/httpd/conf.d/zabbix-repo.conf
+  notify: restart httpd
+
+ 

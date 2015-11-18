@@ -1,0 +1,3 @@
+- name: Configuration repo
+  template: src=zabbix.repo dest=/etc/yum.repos.d/zabbix.repo
+  notify: reload repo

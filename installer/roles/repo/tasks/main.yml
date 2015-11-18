@@ -1,0 +1,6 @@
+---
+- name: Configuration repo
+  shell: "cd /etc/yum.repos.d && mkdir -p back && mv *.repo back/"
+- name: Configuration zabbix.repo
+  template: src=zabbix.repo dest=/etc/yum.repos.d/zabbix.repo
+  #notify: reload repo

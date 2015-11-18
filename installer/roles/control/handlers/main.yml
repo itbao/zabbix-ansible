@@ -1,0 +1,8 @@
+---
+- name: reload repo
+  command: yum clean all 
+  command: yum makecache
+- name: restart httpd
+  service: name=httpd  state=restarted
+- name: unzip zabbix-repo
+  shell: "cd /data && tar xf zabbix-repo.tar && chown -R apache.apache zabbix-repo"

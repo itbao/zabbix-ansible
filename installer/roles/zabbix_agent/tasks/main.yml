@@ -1,0 +1,11 @@
+---
+- name: Install zabbix-agent
+  yum: name={{ item }}-{{ zabbix_agent_version }} state=present enablerepo=ustack_zabbix
+  with_items:
+  - zabbix
+  - zabbix-agent
+  - zabbix-sender
+
+- name: Copy zabbix-agent configuration
+  template: src=zabbix_agentd.conf dest=/etc/zabbix/zabbix_agentd.conf
+  notify: restart zabbix-agent

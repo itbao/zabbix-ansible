@@ -1,0 +1,4 @@
+---
+- name: reload repo
+  command: yum clean all 
+  command: yum makecache

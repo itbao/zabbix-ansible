@@ -1,0 +1,18 @@
+---
+zabbix_server_version: 2.4.5
+
+###Zabbix_Server_Base
+zabbix_hostname: server-220.0.uc.ustack.in
+zabbix_server_port: 10051
+zabbix_server_ip: 127.0.0.1
+
+#ZabbixDB
+zabbix_db_ip: 127.0.0.1
+zabbix_db_port: 3306
+zabbix_db_name: zabbix
+zabbix_db_user: zabbix
+zabbix_db_pass: zbxpass
+
+###Zabbix_Config
+#item_number: 10000-200000 ,1000host * 100item=100000
+item_number: 20000
